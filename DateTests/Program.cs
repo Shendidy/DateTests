@@ -9,51 +9,76 @@ namespace DateTests
     {
         static void Main(string[] args)
         {
-            //Main variables/values to be used
-            var sourceDateTimeString = "11/12/2018 17:37:32.125+00:00";
-            var sourceTimeZone = "UTC";
-            //var sourceDateTimeFormat = "dd/MM/yyyy HH:mm:ss.fffZ";
-            //var targetTimeZone = "UTC";
-            //var targetDateTimeFormat = "yyyy-MM-ddTHH-mm-ss.fffZ";
+           // Main variables/ values to be used
+             var sourceDateTimeString = "08/12/2018 17:37:32.525+02:00";
+            var sourceDateTimeFormat = "MM/dd/yyyy HH:mm:ss.fffzzz";
+            var sourceTimeZonePattern = "Africa/Cairo";
+
+
+
+
+            //var offset = DateTimeOffset.ParseExact(sourceDateTimeString, sourceDateTimeFormat, Culturei)
+
+            //TimeZoneInfo testInfo = TimeZoneInfo.Utc;
+
+            //var offsetFromUtc = testInfo.GetUtcOffset(Convert.ToDateTime(sourceDateTimeString));
+
+            var convertedStringDateTime = DateTimeOffset.Parse(sourceDateTimeString, CultureInfo.GetCultureInfo("en-US")).UtcDateTime.ToString("yyyy-MM-ddTHH:mm:ss");
+            //var offsetFromString = convertedDateTime.ToUniversalTime();
+
+            var sourceDateTimeAsIsString = DateTimeOffset.Parse(sourceDateTimeString).DateTime.ToString("yyyy-MM-ddTHH:mm:ss");
+
+            var targetTimeZone = "UTC";
+            var targetDateTimeFormat = "yyyy-MM-ddTHH:mm:ss";
 
             //Check if time zone provided separately and that in the DateTimeString match
-            var timeZoneOffset = GetTimeZoneOffset(sourceDateTimeString, sourceTimeZone);
-            Console.WriteLine(timeZoneOffset);
+
+            var SourceDateTimePattern = LocalDateTimePattern.CreateWithInvariantCulture(sourceDateTimeFormat);
+            var SourceDateTime = SourceDateTimePattern.Parse(sourceDateTimeAsIsString).Value;
+
+            var TargetTimeZone = string.IsNullOrEmpty(targetTimeZone) ? sourceTimeZonePattern : targetTimeZone;
+            var sourceTz = DateTimeZoneProviders.Tzdb[sourceTimeZonePattern];
+            var targetTz = DateTimeZoneProviders.Tzdb[TargetTimeZone];
+
+            var SourceZonedDateTime = SourceDateTime.InZoneLeniently(sourceTz);
+            var TargetZonedDateTime = SourceZonedDateTime.WithZone(targetTz);
 
 
-            //var SourceDateTimePattern = LocalDateTimePattern.CreateWithInvariantCulture(sourceDateTimeFormat);
-            //var SourceDateTime = SourceDateTimePattern.Parse(sourceDateTimeString).Value;
-
-            //var TargetTimeZone = string.IsNullOrEmpty(targetTimeZone) ?  sourceTimeZone : targetTimeZone;
-            //var SourceTzPattern = DateTimeZoneProviders.Tzdb[sourceTimeZone];
-            //var TargetTzPattern = DateTimeZoneProviders.Tzdb[TargetTimeZone];
-
-            //var SourceZonedDateTime = SourceDateTime.InZoneLeniently(SourceTzPattern);
-            //var TargetZonedDateTime = SourceZonedDateTime.WithZone(TargetTzPattern);
-
-            //var TargetDateTimeFormat = targetDateTimeFormat;
+            var outPattern = ZonedDateTimePattern.CreateWithInvariantCulture(targetDateTimeFormat, DateTimeZoneProviders.Tzdb);
 
 
-            //var outPattern = ZonedDateTimePattern.CreateWithInvariantCulture(TargetDateTimeFormat, DateTimeZoneProviders.Tzdb);
-            //Console.WriteLine(outPattern.Format(TargetZonedDateTime));
+            var outputString = outPattern.Format(TargetZonedDateTime);
+            Console.WriteLine(outPattern.Format(TargetZonedDateTime));
 
         }
 
 
-        public static bool TryParseExact(string sourceDateTimeString, string sourceDateTimeFormat)
+
+
+
+        public DateTime GetDateTimeObject(string dateTimeString, string timeZoneSpecifier)
         {
-            var canParse = System.DateTime.TryParseExact(sourceDateTimeString, sourceDateTimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedDateTime);
+            DateTime convertedDateTime = new DateTime();
 
-            return canParse;
+
+
+            return convertedDateTime;
         }
 
-        public static string GetTimeZoneOffset(string sourceDateTimeString, string sourceTimeZone)
-        {
-            string timeZoneOffset = "test";
-            //Offset x = DateTimeZoneProviders
+        //public static bool TryParseExact(string sourceDateTimeString, string sourceDateTimeFormat)
+        //{
+        //    var canParse = System.DateTime.TryParseExact(sourceDateTimeString, sourceDateTimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedDateTime);
 
-            return timeZoneOffset;
-        }
+        //    return canParse;
+        //}
+
+        //public static string GetTimeZoneOffset(string sourceDateTimeString)
+        //{
+        //    string timeZoneOffset = "test";
+        //    //Offset x = DateTimeZoneProviders
+
+        //    return timeZoneOffset;
+        //}
 
     }
 }
